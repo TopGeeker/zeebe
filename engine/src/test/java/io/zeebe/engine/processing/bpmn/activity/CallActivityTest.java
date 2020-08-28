@@ -223,6 +223,34 @@ public final class CallActivityTest {
   }
 
   @Test
+  public void shouldNotPropagateVariablesToParentIfDisabled() {
+    // given
+    ENGINE
+        .deployment()
+        .withXmlResource(
+            "wf-parent.bpmn", parentWorkflow(c -> c.zeebePropagateAllChildVariables(false)))
+        .deploy();
+
+    final var workflowInstanceKey =
+        ENGINE.workflowInstance().ofBpmnProcessId(PROCESS_ID_PARENT).create();
+
+    final var childInstanceKey = getChildInstanceOf(workflowInstanceKey).getWorkflowInstanceKey();
+
+    // when
+    completeJobWith(Map.of("y", 2));
+
+    // then
+    assertThat(
+            RecordingExporter.records()
+                .limitToWorkflowInstance(workflowInstanceKey)
+                .variableRecords())
+        .extracting(Record::getValue)
+        .extracting(v -> tuple(v.getScopeKey(), v.getName()))
+        .contains(tuple(childInstanceKey, "y"))
+        .doesNotContain(tuple(workflowInstanceKey, "y"));
+  }
+
+  @Test
   public void shouldApplyInputMappings() {
     // given
     ENGINE
