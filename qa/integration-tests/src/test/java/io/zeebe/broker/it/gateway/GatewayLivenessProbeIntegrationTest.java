@@ -45,11 +45,6 @@ public class GatewayLivenessProbeIntegrationTest {
     // start both containers
     Stream.of(gateway, broker).parallel().forEach(Startable::start);
 
-    final ZeebeClient zeebeClient = createZeebeClient(gateway);
-
-    // wait a little while to give the broker and gateway a chance to find each other
-    await().atMost(60, SECONDS).untilAsserted(() -> assertTopologyIsComplete(zeebeClient));
-
     final Integer actuatorPort = gateway.getMappedPort(ZeebePort.MONITORING.getPort());
     final String containerIPAddress = gateway.getExternalHost();
 
@@ -67,11 +62,6 @@ public class GatewayLivenessProbeIntegrationTest {
 
     // --- shutdown ------------------------------------------
     Stream.of(gateway, broker).parallel().forEach(Startable::stop);
-  }
-
-  private void assertTopologyIsComplete(final ZeebeClient zeebeClient) {
-    final var topology = zeebeClient.newTopologyRequest().send().join();
-    assertThat(topology).isComplete(1, 1);
   }
 
   @Test
@@ -104,12 +94,5 @@ public class GatewayLivenessProbeIntegrationTest {
 
     // --- shutdown ------------------------------------------
     gateway.stop();
-  }
-
-  private static ZeebeClient createZeebeClient(final ZeebeGatewayContainer gateway) {
-    return ZeebeClient.newClientBuilder()
-        .brokerContactPoint(gateway.getExternalGatewayAddress())
-        .usePlaintext()
-        .build();
   }
 }
