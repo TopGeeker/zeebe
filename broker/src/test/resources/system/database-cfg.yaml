@@ -1,0 +1,8 @@
+zeebe:
+  broker:
+    data:
+      database:
+        columnFamilyOptions:
+          x: y
+          foo_foo: bar
+          bar: 123

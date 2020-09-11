@@ -46,6 +46,7 @@ public final class DataCfg implements ConfigurationEntry {
   private double diskUsageReplicationWatermark = DEFAULT_DISK_USAGE_REPLICATION_WATERMARK;
   private double diskUsageCommandWatermark = DEFAULT_DISK_USAGE_COMMAND_WATERMARK;
   private Duration diskUsageMonitoringInterval = DEFAULT_DISK_USAGE_MONITORING_DELAY;
+  private DatabaseCfg database = new DatabaseCfg();
 
   @Override
   public void init(final BrokerCfg globalConfig, final String brokerBase) {
@@ -149,6 +150,14 @@ public final class DataCfg implements ConfigurationEntry {
     this.diskUsageMonitoringInterval = diskUsageMonitoringInterval;
   }
 
+  public DatabaseCfg getDatabase() {
+    return database;
+  }
+
+  public void setDatabase(final DatabaseCfg database) {
+    this.database = database;
+  }
+
   @Override
   public String toString() {
     return "DataCfg{"
@@ -170,6 +179,8 @@ public final class DataCfg implements ConfigurationEntry {
         + diskUsageCommandWatermark
         + ", diskUsageMonitoringInterval="
         + diskUsageMonitoringInterval
+        + ", database="
+        + database
         + '}';
   }
 }
